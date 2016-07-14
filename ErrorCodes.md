@@ -3,6 +3,7 @@
 ## 100 Internal
 
 * Code: 100 is a problem when turning an interface into a JSON byte array
+* Code: 101 could not get the request from context
 
 ## 200 BadRequest
 

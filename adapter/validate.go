@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/dixonwille/PokeGoSlack/env"
 	"github.com/dixonwille/PokeGoSlack/helper"
 	"github.com/gorilla/context"
@@ -17,8 +18,9 @@ func Validate(command string) Adapter {
 			if req == nil {
 				return //error was handled for us already
 			}
-			context.Set(r, env.KeyForm, req)
+			context.Set(r, env.KeyForm, *req)
 			log.Println("Validated")
+			spew.Dump(*req)
 			h.ServeHTTP(w, r)
 		})
 	}
