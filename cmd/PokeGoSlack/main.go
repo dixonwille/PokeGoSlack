@@ -13,7 +13,8 @@ import (
 
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", handler.Gym).Methods("POST")
+	router.HandleFunc("/gym", handler.Gym).Methods("POST")
+	router.HandleFunc("/trainer", handler.Trainer).Methods("POST")
 	router.NotFoundHandler = http.HandlerFunc(handler.NotFound)
 	middleRouter := http.NewServeMux()
 	middleRouter.Handle("/", adapter.Adapt(router,
