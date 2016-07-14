@@ -21,7 +21,7 @@ func main() {
 		adapter.Header("Content-Type", "application/json"),
 	))
 	fmt.Println("Listening on port " + env.Port)
-	err := http.ListenAndServe(":"+env.Port, router)
+	err := http.ListenAndServe(":"+env.Port, middleRouter)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
