@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/dixonwille/PokeGoSlack/env"
 	"github.com/dixonwille/PokeGoSlack/exception"
 	"github.com/dixonwille/PokeGoSlack/helper"
@@ -23,7 +24,6 @@ func Gym(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cmd, _ := helper.ParseCommand(req)
-	context.Set(r, env.KeyCMD, cmd)
 	var res *model.Response
 	switch strings.ToLower(cmd) {
 	case "private":
@@ -31,9 +31,9 @@ func Gym(w http.ResponseWriter, r *http.Request) {
 	case "public":
 		res = model.NewPublicResponse("Hey there from PokeGoSlack API. Everyone is able to see this.")
 	default:
-		context.Set(r, env.KeyCMD, "help")
 		res = helpResponse()
 	}
+	spew.Dump(res)
 	helper.Write(w, http.StatusOK, res)
 }
 
