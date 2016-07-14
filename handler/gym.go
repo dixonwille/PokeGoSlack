@@ -30,7 +30,7 @@ func Gym(w http.ResponseWriter, r *http.Request) {
 	case "public":
 		res = model.NewPublicResponse("Hey there from PokeGoSlack API. Everyone is able to see this.")
 	default:
-
+		res = helpResponse()
 	}
 	helper.Write(w, http.StatusOK, res)
 }
