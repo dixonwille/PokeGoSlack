@@ -21,6 +21,9 @@ func main() {
 		adapter.Logging(env.Logger),
 		adapter.Header("Content-Type", "application/json"),
 	))
+	middleRouter.Handle("/gym", adapter.Adapt(router,
+		adapter.Validate("/gym"),
+	))
 	fmt.Println("Listening on port " + env.Port)
 	err := http.ListenAndServe(":"+env.Port, middleRouter)
 	if err != nil {

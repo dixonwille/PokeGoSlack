@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/dixonwille/PokeGoSlack/env"
+	"github.com/dixonwille/PokeGoSlack/exception"
 	"github.com/dixonwille/PokeGoSlack/helper"
 	"github.com/dixonwille/PokeGoSlack/model"
 	"github.com/gorilla/context"
@@ -15,6 +16,10 @@ import (
 func Gym(w http.ResponseWriter, r *http.Request) {
 	req, ok := context.Get(r, env.KeyForm).(model.Request)
 	if !ok {
+		newError := exception.NewInternalErr(101, "Could not get request object")
+		errMsg := model.NewErrorMessage(newError.Error())
+		newError.LogError()
+		helper.Write(w, http.StatusInternalServerError, errMsg)
 		return
 	}
 	cmd, _ := helper.ParseCommand(req)
