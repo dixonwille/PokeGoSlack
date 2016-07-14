@@ -1,6 +1,7 @@
 package adapter
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/dixonwille/PokeGoSlack/env"
@@ -17,6 +18,7 @@ func Validate(command string) Adapter {
 				return //error was handled for us already
 			}
 			context.Set(r, env.KeyForm, req)
+			log.Println("Validated")
 			h.ServeHTTP(w, r)
 		})
 	}
