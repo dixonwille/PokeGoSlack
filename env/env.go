@@ -26,8 +26,10 @@ const (
 	defaultPort = "80"
 )
 const (
-	//Key is the key used to get the parsed reqest form.
+	//KeyForm is the key used to get the parsed reqest form.
 	KeyForm Key = iota
+	//KeyCMD is the key for the command that was called
+	KeyCMD
 )
 
 func init() {

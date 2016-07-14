@@ -23,6 +23,7 @@ func Gym(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cmd, _ := helper.ParseCommand(req)
+	context.Set(r, env.KeyCMD, cmd)
 	var res *model.Response
 	switch strings.ToLower(cmd) {
 	case "private":
@@ -30,6 +31,7 @@ func Gym(w http.ResponseWriter, r *http.Request) {
 	case "public":
 		res = model.NewPublicResponse("Hey there from PokeGoSlack API. Everyone is able to see this.")
 	default:
+		context.Set(r, env.KeyCMD, "help")
 		res = helpResponse()
 	}
 	helper.Write(w, http.StatusOK, res)
@@ -39,8 +41,9 @@ func helpResponse() *model.Response {
 	res := model.NewPrivateResponse("")
 	priv := model.NewField("/gym private", "API will only respond to you.", false)
 	pub := model.NewField("/gym public", "API will respond to everyone in channel.", false)
+	hlp := model.NewField("/gym help", "Displays this message", false)
 	att := model.NewAttachment("Possible commands for `/gym`")
-	att.AddFields(*priv, *pub)
+	att.AddFields(*priv, *pub, *hlp)
 	res.AddAttachments(*att)
 	return res
 }

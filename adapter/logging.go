@@ -5,6 +5,9 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/dixonwille/PokeGoSlack/env"
+	"github.com/gorilla/context"
 )
 
 type loggingResponseWriter struct {
@@ -22,10 +25,12 @@ func Logging(l *log.Logger) Adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			myW := &loggingResponseWriter{-1, w}
-			before := time.Now().UTC().Unix()
+			before := time.Now().UTC()
 			h.ServeHTTP(myW, r)
-			totalTime := time.Now().UTC().Unix() - before
-			l.Println(fmt.Sprintf("[%s]\t[%d]\t[%dms]\t%s", r.Method, myW.status, totalTime, r.Host+r.URL.String()))
+			totalTime := time.Now().UTC().Sub(before).Nanoseconds()
+			total := float64(totalTime) / float64(1000000)
+			cmd := context.Get(r, env.KeyCMD)
+			l.Println(fmt.Sprintf("[%d]\t[%.1fms]\t%s %s", myW.status, total, r.URL.String(), cmd))
 		})
 	}
 }
