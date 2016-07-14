@@ -13,16 +13,13 @@ import (
 
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/gym", handler.Gym).Methods("POST")
-	router.HandleFunc("/trainer", handler.Trainer).Methods("POST")
+	router.Handle("/gym", adapter.Adapt(http.HandlerFunc(handler.Gym), adapter.Validate("/gym"))).Methods("POST")
+	router.Handle("/trainer", http.HandlerFunc(handler.Trainer)).Methods("POST")
 	router.NotFoundHandler = http.HandlerFunc(handler.NotFound)
 	middleRouter := http.NewServeMux()
 	middleRouter.Handle("/", adapter.Adapt(router,
 		adapter.Logging(env.Logger),
-		adapter.Header("Content-Type", "application/json"),
-	))
-	middleRouter.Handle("/gym", adapter.Adapt(router,
-		adapter.Validate("/gym"),
+		adapter.Header("Content-type", "application/json"),
 	))
 	fmt.Println("Listening on port " + env.Port)
 	err := http.ListenAndServe(":"+env.Port, middleRouter)
