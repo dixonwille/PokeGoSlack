@@ -12,7 +12,7 @@ import (
 func Validate(command string) Adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			req := helper.ValidateRequestAndParse(r, command)
+			req := helper.ValidateRequestAndParse(w, r, command)
 			if req == nil {
 				return //error was handled for us already
 			}
