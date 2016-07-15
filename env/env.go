@@ -28,8 +28,12 @@ const (
 const (
 	//KeyForm is the key used to get the parsed reqest form.
 	KeyForm Key = iota
-	//KeyCMD is the key for the command that was called
-	KeyCMD
+	//KeyArgs is the key for the arguments for the command.
+	KeyArgs
+	//KeyHelpCmd is the key for which command to display the help for
+	KeyHelpCmd
+	//KeyCmd is the command that got called
+	KeyCmd
 )
 
 func init() {

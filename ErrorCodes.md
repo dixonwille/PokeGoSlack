@@ -4,6 +4,8 @@
 
 * Code: 100 is a problem when turning an interface into a JSON byte array
 * Code: 101 could not get the request from context
+* Code: 102 could not get arguments for the command
+* Code: 103 could not get the command that was called
 
 ## 200 BadRequest
 
