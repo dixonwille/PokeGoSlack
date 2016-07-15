@@ -2,10 +2,6 @@ package controller
 
 import "net/http"
 
-var (
-	emptyCommand Command = Command{}
-)
-
 //Command are commands used by and endpoint
 type Command struct {
 	Cmd        string
