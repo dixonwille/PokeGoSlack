@@ -84,6 +84,7 @@ func GymHelp(w http.ResponseWriter, r *http.Request) {
 	helper.Write(w, http.StatusOK, res)
 }
 
+//returns the command, args, and if it responded already or not.
 func parseReqAndCheckForHelp(w http.ResponseWriter, r *http.Request) (Command, []string, bool) {
 	command, ok := context.Get(r, env.KeyCmd).(Command)
 	if !ok {
@@ -133,7 +134,7 @@ func mainHelp() *model.Response {
 	res := model.NewPrivateResponse("")
 	att := model.NewAttachment("Help for `/gym`")
 	for _, cmd := range GymCmds {
-		title := att.Title + " " + cmd.Cmd
+		title := "/gym " + cmd.Cmd
 		field := model.NewField(title, cmd.HelpText, false)
 		att.AddFields(*field)
 	}
@@ -155,10 +156,9 @@ func cmdHelp(cmdHelp string) *model.Response {
 	}
 	res := model.NewPrivateResponse("")
 	att := model.NewAttachment("Help for `/gym " + command.Cmd + "`")
-	att.Title = "/gym " + command.Cmd
 	att.Text = command.HelpText
 	for _, arg := range command.Args {
-		title := att.Title + " &lt;" + strings.ToUpper(arg.Name) + "&gt;"
+		title := "/gym " + command.Cmd + " <" + strings.ToUpper(arg.Name) + ">"
 		field := model.NewField(title, arg.HelpText, false)
 		att.AddFields(*field)
 	}
