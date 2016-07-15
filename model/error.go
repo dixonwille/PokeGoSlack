@@ -1,13 +1,12 @@
 package model
 
-//ErrorMessage is for generic error messages sent back to server.
-type ErrorMessage struct {
-	Error string `json:"error"`
-}
-
 //NewErrorMessage is to create an ErrorMessage.
-func NewErrorMessage(msg string) *ErrorMessage {
-	return &ErrorMessage{
-		Error: msg,
-	}
+func NewErrorMessage(msg string) *Response {
+	res := NewPrivateResponse("")
+	att := NewAttachment("")
+	att.Title = "Oops!"
+	att.Text = msg
+	att.Color = "danger"
+	res.AddAttachments(*att)
+	return res
 }
