@@ -143,11 +143,15 @@ func cmdHelp(cmdHelp string) *model.Response {
 	}
 	res := model.NewPrivateResponse("")
 	att := model.NewAttachment("Help for `/gym " + command.Cmd + "`")
+	att.Title = "/gym " + command.Cmd
 	att.Text = command.HelpText
-	for _, arg := range command.Args {
-		title := "/gym " + command.Cmd + " <" + strings.ToUpper(arg.Name) + ">"
-		field := model.NewField(title, arg.HelpText, false)
-		att.AddFields(*field)
+	for i, arg := range command.Args {
+		if i != len(command.Args)-1 {
+			att.Title = att.Title + " <" + arg.Name + ">"
+			title := "<" + strings.ToUpper(arg.Name) + ">"
+			field := model.NewField(title, arg.HelpText, true)
+			att.AddFields(*field)
+		}
 	}
 	res.AddAttachments(*att)
 	return res
