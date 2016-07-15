@@ -38,30 +38,38 @@ func gymInit() {
 
 //AddGym is used to add a gym to watch.
 func AddGym(w http.ResponseWriter, r *http.Request) {
-	command, _ := parseReqAndCheckForHelp(w, r)
-	res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
-	helper.Write(w, http.StatusOK, res)
+	command, _, responded := parseReqAndCheckForHelp(w, r)
+	if !responded {
+		res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
+		helper.Write(w, http.StatusOK, res)
+	}
 }
 
 //ListGyms is used to list all the gyms.
 func ListGyms(w http.ResponseWriter, r *http.Request) {
-	command, _ := parseReqAndCheckForHelp(w, r)
-	res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
-	helper.Write(w, http.StatusOK, res)
+	command, _, responded := parseReqAndCheckForHelp(w, r)
+	if !responded {
+		res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
+		helper.Write(w, http.StatusOK, res)
+	}
 }
 
 //UpdateGym is used to update a specific gym.
 func UpdateGym(w http.ResponseWriter, r *http.Request) {
-	command, _ := parseReqAndCheckForHelp(w, r)
-	res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
-	helper.Write(w, http.StatusOK, res)
+	command, _, responded := parseReqAndCheckForHelp(w, r)
+	if !responded {
+		res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
+		helper.Write(w, http.StatusOK, res)
+	}
 }
 
 //RemoveGym removes a gym from the watch list.
 func RemoveGym(w http.ResponseWriter, r *http.Request) {
-	command, _ := parseReqAndCheckForHelp(w, r)
-	res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
-	helper.Write(w, http.StatusOK, res)
+	command, _, responded := parseReqAndCheckForHelp(w, r)
+	if !responded {
+		res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
+		helper.Write(w, http.StatusOK, res)
+	}
 }
 
 //GymHelp displays the help for the gym enpoint
@@ -76,14 +84,14 @@ func GymHelp(w http.ResponseWriter, r *http.Request) {
 	helper.Write(w, http.StatusOK, res)
 }
 
-func parseReqAndCheckForHelp(w http.ResponseWriter, r *http.Request) (Command, []string) {
+func parseReqAndCheckForHelp(w http.ResponseWriter, r *http.Request) (Command, []string, bool) {
 	command, ok := context.Get(r, env.KeyCmd).(Command)
 	if !ok {
 		newErr := exception.NewInternalErr(103, "Could not get the command that was called")
 		res := model.NewErrorMessage(newErr.Error())
 		newErr.LogError()
 		helper.Write(w, http.StatusInternalServerError, res)
-		return Command{}, nil
+		return Command{}, nil, true
 	}
 	args, ok := context.Get(r, env.KeyArgs).([]string)
 	if !ok {
@@ -91,43 +99,41 @@ func parseReqAndCheckForHelp(w http.ResponseWriter, r *http.Request) (Command, [
 		res := model.NewErrorMessage(newErr.Error())
 		newErr.LogError()
 		helper.Write(w, http.StatusInternalServerError, res)
-		return Command{}, nil
+		return Command{}, nil, true
 	}
 	switch len(args) {
 	case 1:
 		if args[0] == command.Args[len(command.Args)-1].Name {
 			context.Set(r, env.KeyHelpCmd, command.Cmd)
 			GymHelp(w, r)
-			return Command{}, nil
+			return Command{}, nil, true
 		}
 		if len(command.Args)-1 == 1 && command.Args[0].Name != args[0] {
 			res := model.NewErrorMessage("Could not find the command " + args[0] + " for " + command.Cmd)
 			helper.Write(w, http.StatusBadRequest, res)
-			return Command{}, nil
+			return Command{}, nil, true
 		}
 	case 0:
 		context.Set(r, env.KeyHelpCmd, command.Cmd)
 		GymHelp(w, r)
-		return Command{}, nil
+		return Command{}, nil, true
 	default:
 		for _, arg := range args {
 			if !argExist(command, arg) {
 				res := model.NewErrorMessage("Could not find the command " + arg + " for " + command.Cmd)
 				helper.Write(w, http.StatusBadRequest, res)
-				return Command{}, nil
+				return Command{}, nil, true
 			}
 		}
 	}
-	return command, args
+	return command, args, false
 }
 
 func mainHelp() *model.Response {
 	res := model.NewPrivateResponse("")
 	att := model.NewAttachment("Help for `/gym`")
-	att.Title = "/gym"
-	att.Text = "Used to update, list, add, and remove gyms.\nFollow any command with help to see more about that command."
 	for _, cmd := range GymCmds {
-		title := att.Title + cmd.Cmd
+		title := att.Title + " " + cmd.Cmd
 		field := model.NewField(title, cmd.HelpText, false)
 		att.AddFields(*field)
 	}
