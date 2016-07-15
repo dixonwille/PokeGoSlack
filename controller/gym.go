@@ -109,23 +109,10 @@ func parseReqAndCheckForHelp(w http.ResponseWriter, r *http.Request) (Command, [
 			GymHelp(w, r)
 			return Command{}, nil, true
 		}
-		if len(command.Args)-1 == 1 && command.Args[0].Name != args[0] {
-			res := model.NewErrorMessage("Could not find the command " + args[0] + " for " + command.Cmd)
-			helper.Write(w, http.StatusBadRequest, res)
-			return Command{}, nil, true
-		}
 	case 0:
 		context.Set(r, env.KeyHelpCmd, command.Cmd)
 		GymHelp(w, r)
 		return Command{}, nil, true
-	default:
-		for _, arg := range args {
-			if !argExist(command, arg) {
-				res := model.NewErrorMessage("Could not find the command " + arg + " for " + command.Cmd)
-				helper.Write(w, http.StatusBadRequest, res)
-				return Command{}, nil, true
-			}
-		}
 	}
 	return command, args, false
 }
@@ -164,13 +151,4 @@ func cmdHelp(cmdHelp string) *model.Response {
 	}
 	res.AddAttachments(*att)
 	return res
-}
-
-func argExist(cmd Command, arg string) bool {
-	for _, cmdArg := range cmd.Args {
-		if arg == cmdArg.Name {
-			return true
-		}
-	}
-	return false
 }
