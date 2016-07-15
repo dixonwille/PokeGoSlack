@@ -27,7 +27,7 @@ func gymInit() {
 	updateCmd.AddConroller(UpdateGym)
 	updateCmd.AddArgument("gymid", "The ID of the gym you want to update.")
 	updateCmd.AddArgument("team", "Which team owns this gym.")
-	updateCmd.AddArgument("level", "[OPTIONAL] What level is they gym.")
+	updateCmd.AddArgument("level", "[OPTIONAL] What level is the gym.")
 	updateCmd.AddArgument("help", "Displays this message.")
 	removeCmd := NewCommand("remove", "Removes a gym from listing (All data will be lost).")
 	removeCmd.AddConroller(RemoveGym)
@@ -120,6 +120,7 @@ func parseReqAndCheckForHelp(w http.ResponseWriter, r *http.Request) (Command, [
 func mainHelp() *model.Response {
 	res := model.NewPrivateResponse("")
 	att := model.NewAttachment("Help for `/gym`")
+	att.Text = "Type help after a command to get more information"
 	for _, cmd := range GymCmds {
 		title := "/gym " + cmd.Cmd
 		field := model.NewField(title, cmd.HelpText, false)
