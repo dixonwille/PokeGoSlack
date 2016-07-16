@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -84,6 +85,22 @@ func OAuthAccess(w http.ResponseWriter, r *http.Request) {
 	}
 	//TODO:save token in db
 	//TODO:replace with template!
+	db, ok := context.Get(r, env.KeyDB).(*sql.DB)
+	if !ok {
+		newErr := exception.NewInternalErr(109, "Could not get Database from context")
+		errMsg := model.NewErrorMessage(newErr.Error())
+		newErr.LogError()
+		helper.Write(w, http.StatusInternalServerError, errMsg)
+		return
+	}
+	_, err = db.Query("INSERT INTO system.team (TeamId,TeamName,AccessToken) (VALUES $1, $2, $3);", body.TeamID, body.TeamName, body.AccessToken)
+	if err != nil {
+		newErr := exception.NewInternalErr(109, "Could not get insert into database: "+err.Error())
+		errMsg := model.NewErrorMessage(newErr.Error())
+		newErr.LogError()
+		helper.Write(w, http.StatusInternalServerError, errMsg)
+		return
+	}
 	errMsg := model.NewErrorMessage("Added your team to the roster!")
 	helper.Write(w, http.StatusOK, errMsg)
 }
