@@ -41,6 +41,7 @@ func OAuthAccess(w http.ResponseWriter, r *http.Request) {
 		helper.Write(w, http.StatusInternalServerError, errMsg)
 		return
 	}
+	spew.Dump(api.String())
 	res, err := http.Get(api.String())
 	if err != nil {
 		errMsg := model.NewErrorMessage(err.Error())
@@ -51,7 +52,6 @@ func OAuthAccess(w http.ResponseWriter, r *http.Request) {
 	defer res.Body.Close()
 	if strings.Contains(res.Header.Get("Content-type"), "text/html") {
 		io.Copy(w, res.Body)
-		spew.Dump(res.Header)
 		return
 	}
 	if res.StatusCode != http.StatusOK {
