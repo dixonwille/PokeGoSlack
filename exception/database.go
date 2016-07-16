@@ -4,7 +4,7 @@ import "errors"
 
 var (
 	//ErrTeamExist says that the team is already in DB
-	ErrTeamExist = errors.New("This is already using PokeGo.")
+	ErrTeamExist = errors.New("This team is already using PokeGo.")
 )
 
 //IsTeamExistErr states whether this erro is a team exist error
