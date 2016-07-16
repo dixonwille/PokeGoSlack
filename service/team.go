@@ -14,7 +14,9 @@ func InsertTeam(db *sql.DB, body *model.OAuthResp) error {
 	err := db.QueryRow("SELECT TeamName FROM system.Team WHERE TeamId = $1", body.TeamID).Scan(&teamname)
 	switch {
 	case err == sql.ErrNoRows:
-		body.TeamName = body.TeamName[:50]
+		if len(body.TeamName) > 50 {
+			body.TeamName = body.TeamName[:50]
+		}
 		spew.Dump(len(body.AccessToken))
 		_, err = db.Query("INSERT INTO system.Team (TeamId,TeamName,AccessToken) VALUES ($1, $2, $3)", body.TeamID, body.TeamName, body.AccessToken)
 		if err != nil {
