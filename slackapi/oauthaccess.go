@@ -26,6 +26,6 @@ func OAuthAccess(code string) error {
 	if err != nil {
 		return err
 	}
-	spew.Dump(res)
+	spew.Dump(res.Body)
 	return nil
 }
