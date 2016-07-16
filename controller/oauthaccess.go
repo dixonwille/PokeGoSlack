@@ -76,7 +76,14 @@ func OAuthAccess(w http.ResponseWriter, r *http.Request) {
 		helper.Write(w, http.StatusInternalServerError, errMsg)
 		return
 	}
-	spew.Dump(body)
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Saved"))
+	if !body.Ok {
+		//TODO:replace with template!
+		errMsg := model.NewErrorMessage("I am sorry we could not authorize you: " + body.Error)
+		helper.Write(w, http.StatusUnauthorized, errMsg)
+		return
+	}
+	//TODO:save token in db
+	//TODO:replace with template!
+	errMsg := model.NewErrorMessage("Added your team to the roster!")
+	helper.Write(w, http.StatusOK, errMsg)
 }

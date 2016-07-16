@@ -21,7 +21,9 @@ func OAuth(w http.ResponseWriter, r *http.Request) {
 	for param, value := range params {
 		if param == "error" {
 			if value[0] == accessDenied {
-				//Declined app access
+				//TODO:replace with sorry you don't want template
+				errMsg := model.NewErrorMessage("Sorry something went wrong.")
+				helper.Write(w, http.StatusOK, errMsg)
 				return
 			}
 			var msg string
