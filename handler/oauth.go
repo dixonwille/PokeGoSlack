@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/dixonwille/PokeGoSlack/exception"
 	"github.com/dixonwille/PokeGoSlack/helper"
 	"github.com/dixonwille/PokeGoSlack/model"
@@ -41,11 +42,11 @@ func OAuth(w http.ResponseWriter, r *http.Request) {
 		helper.Write(w, http.StatusInternalServerError, errMsg)
 		return
 	}
-	slackapi.OAuthAccess(w, code)
-	// if err != nil {
-	// 	errMsg := model.NewErrorMessage(err.Error())
-	// 	helper.Write(w, http.StatusInternalServerError, errMsg)
-	// 	return
-	// }
-	// spew.Dump(response)
+	response, err := slackapi.OAuthAccess(w, code)
+	if err != nil {
+		errMsg := model.NewErrorMessage(err.Error())
+		helper.Write(w, http.StatusInternalServerError, errMsg)
+		return
+	}
+	spew.Dump(response)
 }
