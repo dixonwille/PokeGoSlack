@@ -1,0 +1,2 @@
+ALTER TABLE system.Team
+  ALTER COLUMN AccessToken SET TYPE VARCHAR(100);
