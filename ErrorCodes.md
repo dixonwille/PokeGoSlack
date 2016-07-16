@@ -11,6 +11,7 @@
 * Code: 106 parsing of the slack api url.
 * Code: 107 something went wrong with slack
 * Code: 108 Slack did not send back an application json
+* Code: 109 Could not insert Team into database
 
 ## 200 BadRequest
 
