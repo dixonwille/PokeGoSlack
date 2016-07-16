@@ -7,8 +7,10 @@
 * Code: 102 could not get arguments for the command
 * Code: 103 could not get the command that was called
 * Code: 104 could not handle the error from oauth correctly.
-* Code: 105 could not get the code fro oauth.
+* Code: 105 could not get the code from oauth.
 * Code: 106 parsing of the slack api url.
+* Code: 107 something went wrong with slack
+* Code: 108 Slack did not send back an application json
 
 ## 200 BadRequest
 

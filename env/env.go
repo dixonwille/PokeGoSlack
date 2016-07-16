@@ -43,6 +43,8 @@ const (
 	KeyCmd
 	//KeyDB is the instance of the database
 	KeyDB
+	//KeyCode is used for Auth
+	KeyCode
 )
 
 func init() {
