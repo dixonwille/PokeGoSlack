@@ -2,6 +2,7 @@ package slackapi
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -29,8 +30,16 @@ func OAuthAccess(w http.ResponseWriter, code string) (*model.OAuthResp, error) {
 		return nil, err
 	}
 	defer res.Body.Close()
-	w.Header().Add("Content-type", "text/html")
-	io.Copy(w, res.Body)
+	if res.StatusCode != http.StatusOK {
+		if res.Header.Get("Content-type") == "text/html" {
+			io.Copy(w, res.Body)
+			return nil, errors.New("Glitch")
+		}
+		return nil, errors.New(res.Header.Get("Content-type"))
+	}
+	if res.Header.Get("Content-type") != "applicaton/json" {
+		return nil, errors.New("Can only accept json request")
+	}
 	body := new(model.OAuthResp)
 	err = json.NewDecoder(res.Body).Decode(body)
 	if err != nil {
