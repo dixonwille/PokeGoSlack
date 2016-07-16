@@ -1,7 +1,7 @@
 package slackapi
 
 import (
-	"io/ioutil"
+	"encoding/json"
 	"net/http"
 	"net/url"
 
@@ -28,13 +28,10 @@ func OAuthAccess(code string) (*model.OAuthResp, error) {
 		return nil, err
 	}
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	body := new(model.OAuthResp)
+	err = json.NewDecoder(res.Body).Decode(body)
 	if err != nil {
 		return nil, err
 	}
-	respStruct, err := model.ParseOAuthResp(body)
-	if err != nil {
-		return nil, err
-	}
-	return respStruct, nil
+	return body, nil
 }
