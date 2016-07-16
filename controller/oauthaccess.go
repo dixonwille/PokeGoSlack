@@ -13,6 +13,7 @@ import (
 	"github.com/dixonwille/PokeGoSlack/exception"
 	"github.com/dixonwille/PokeGoSlack/helper"
 	"github.com/dixonwille/PokeGoSlack/model"
+	"github.com/dixonwille/PokeGoSlack/service"
 	"github.com/dixonwille/PokeGoSlack/slackapi"
 	"github.com/gorilla/context"
 )
@@ -93,9 +94,14 @@ func OAuthAccess(w http.ResponseWriter, r *http.Request) {
 		helper.Write(w, http.StatusInternalServerError, errMsg)
 		return
 	}
-	_, err = db.Query("INSERT INTO system.team (TeamId,TeamName,AccessToken) (VALUES $1, $2, $3);", body.TeamID, body.TeamName, body.AccessToken)
+	err = service.InsertTeam(db, body)
 	if err != nil {
-		newErr := exception.NewInternalErr(109, "Could not get insert into database: "+err.Error())
+		if exception.IsTeamExistErr(err) {
+			errMsg := model.NewErrorMessage(err.Error())
+			helper.Write(w, http.StatusInternalServerError, errMsg)
+			return
+		}
+		newErr := exception.NewInternalErr(109, "Could not insert into database: "+err.Error())
 		errMsg := model.NewErrorMessage(newErr.Error())
 		newErr.LogError()
 		helper.Write(w, http.StatusInternalServerError, errMsg)
