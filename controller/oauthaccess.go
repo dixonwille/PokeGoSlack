@@ -84,7 +84,6 @@ func OAuthAccess(w http.ResponseWriter, r *http.Request) {
 		helper.Write(w, http.StatusUnauthorized, errMsg)
 		return
 	}
-	//TODO:save token in db
 	//TODO:replace with template!
 	db, ok := context.Get(r, env.KeyDB).(*sql.DB)
 	if !ok {
