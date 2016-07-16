@@ -16,7 +16,7 @@ func NewAPI(endpoint string, params url.Values) (*url.URL, error) {
 	if err != nil {
 		return nil, exception.NewInternalErr(106, "Could not parse the Slack Api")
 	}
-	api.Path = endpoint
+	api.Path += endpoint
 	api.RawQuery = params.Encode()
 	return api, nil
 }
