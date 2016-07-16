@@ -1,1 +1,1 @@
-web: PokeGoSlack -p $PORT
+web: PokeGoSlack

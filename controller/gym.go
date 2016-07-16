@@ -39,37 +39,41 @@ func gymInit() {
 //AddGym is used to add a gym to watch.
 func AddGym(w http.ResponseWriter, r *http.Request) {
 	command, _, responded := parseReqAndCheckForHelp(w, r)
-	if !responded {
-		res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
-		helper.Write(w, http.StatusOK, res)
+	if responded {
+		return
 	}
+	res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
+	helper.Write(w, http.StatusOK, res)
 }
 
 //ListGyms is used to list all the gyms.
 func ListGyms(w http.ResponseWriter, r *http.Request) {
 	command, _, responded := parseReqAndCheckForHelp(w, r)
-	if !responded {
-		res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
-		helper.Write(w, http.StatusOK, res)
+	if responded {
+		return
 	}
+	res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
+	helper.Write(w, http.StatusOK, res)
 }
 
 //UpdateGym is used to update a specific gym.
 func UpdateGym(w http.ResponseWriter, r *http.Request) {
 	command, _, responded := parseReqAndCheckForHelp(w, r)
-	if !responded {
-		res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
-		helper.Write(w, http.StatusOK, res)
+	if responded {
+		return
 	}
+	res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
+	helper.Write(w, http.StatusOK, res)
 }
 
 //RemoveGym removes a gym from the watch list.
 func RemoveGym(w http.ResponseWriter, r *http.Request) {
 	command, _, responded := parseReqAndCheckForHelp(w, r)
-	if !responded {
-		res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
-		helper.Write(w, http.StatusOK, res)
+	if responded {
+		return
 	}
+	res := model.NewPrivateResponse("The command " + command.Cmd + " has not been implimented yet")
+	helper.Write(w, http.StatusOK, res)
 }
 
 //GymHelp displays the help for the gym enpoint
