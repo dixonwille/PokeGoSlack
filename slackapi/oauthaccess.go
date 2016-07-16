@@ -29,7 +29,7 @@ func OAuthAccess(w http.ResponseWriter, code string) (*model.OAuthResp, error) {
 		return nil, err
 	}
 	defer res.Body.Close()
-	w.Header().Add("Content-type", "text/plain")
+	w.Header().Add("Content-type", "text/html")
 	io.Copy(w, res.Body)
 	body := new(model.OAuthResp)
 	err = json.NewDecoder(res.Body).Decode(body)
