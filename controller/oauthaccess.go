@@ -61,7 +61,7 @@ func OAuthAccess(w http.ResponseWriter, r *http.Request) {
 		helper.Write(w, http.StatusInternalServerError, errMsg)
 		return
 	}
-	if strings.Contains(res.Header.Get("Content-type"), "application/json") {
+	if !strings.Contains(res.Header.Get("Content-type"), "application/json") {
 		newErr := exception.NewInternalErr(108, "Slack sent a response back but it should be application/json")
 		spew.Dump(res.Header.Get("Content-type"))
 		errMsg := model.NewErrorMessage(newErr.Error())
