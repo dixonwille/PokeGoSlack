@@ -49,11 +49,12 @@ func OAuthAccess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer res.Body.Close()
+	if strings.Contains(res.Header.Get("Content-type"), "text/html") {
+		io.Copy(w, res.Body)
+		spew.Dump(res.Header)
+		return
+	}
 	if res.StatusCode != http.StatusOK {
-		if strings.Contains(res.Header.Get("Content-type"), "text/html") {
-			io.Copy(w, res.Body)
-			return
-		}
 		newErr := exception.NewInternalErr(107, "Something went wrong with slack")
 		errMsg := model.NewErrorMessage(newErr.Error())
 		newErr.LogError()
