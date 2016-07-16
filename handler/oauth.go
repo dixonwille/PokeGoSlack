@@ -3,11 +3,11 @@ package handler
 import (
 	"net/http"
 
+	"github.com/dixonwille/PokeGoSlack/controller"
 	"github.com/dixonwille/PokeGoSlack/env"
 	"github.com/dixonwille/PokeGoSlack/exception"
 	"github.com/dixonwille/PokeGoSlack/helper"
 	"github.com/dixonwille/PokeGoSlack/model"
-	"github.com/dixonwille/PokeGoSlack/slackapi"
 	"github.com/gorilla/context"
 )
 
@@ -44,5 +44,5 @@ func OAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	context.Set(r, env.KeyCode, code)
-	slackapi.OAuthAccess(w, r)
+	controller.OAuthAccess(w, r)
 }
