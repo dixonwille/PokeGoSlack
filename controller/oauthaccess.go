@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	oauthAccessEnd string = "/oauth.access"
+	oauthAccessEnd string = "oauth.access"
 )
 
 //OAuthAccess is to ask for permission to connecet to slack
