@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dixonwille/PokeGoSlack/exception"
 	"github.com/dixonwille/PokeGoSlack/helper"
 	"github.com/dixonwille/PokeGoSlack/model"
 	"github.com/dixonwille/PokeGoSlack/service"
@@ -56,12 +55,12 @@ func ListGyms(w http.ResponseWriter, con *model.ReqContext) {
 	if con.Args == nil || len(con.Args) == 0 {
 		gyms, err := service.GetListGyms(con.DB, con.Form.TeamID)
 		if err != nil {
-			if exception.IsNoGymsForTeamErr(err) {
-				res := model.NewPublicResponse("Your team is not watching any gyms! Use `/gym add` to start watching.")
-				helper.RespondingLater(con.Form.ResponseURL, res)
-				return
-			}
 			helper.RespondingLaterError(con.Form.ResponseURL, err)
+			return
+		}
+		if len(gyms) == 0 {
+			res := model.NewPublicResponse("Your team is not watching any gyms! Use `/gym add` to start watching.")
+			helper.RespondingLater(con.Form.ResponseURL, res)
 			return
 		}
 		gymsResp := model.NewPublicResponse("Your team is watching the following:")
@@ -77,6 +76,7 @@ func ListGyms(w http.ResponseWriter, con *model.ReqContext) {
 			gymsResp.AddAttachments(*gymsAtt)
 		}
 		helper.RespondingLater(con.Form.ResponseURL, gymsResp)
+		return
 	}
 	res := model.NewPrivateResponse("The command " + con.Command.Cmd + " has not been implimented yet")
 	helper.RespondingLater(con.Form.ResponseURL, res)

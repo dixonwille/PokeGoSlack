@@ -19,9 +19,6 @@ func GetListGyms(db *sql.DB, teamid string) ([]*model.Gym, error) {
 		gym := new(model.Gym)
 		err := rows.Scan(&gym.ID, &gym.Name, &gym.OwnerTeam, &gym.Level)
 		if err != nil {
-			if err == sql.ErrNoRows {
-				return nil, exception.NewNoGymsForTeamError()
-			}
 			return nil, exception.NewInternalError(err.Error())
 		}
 		gyms = append(gyms, gym)
