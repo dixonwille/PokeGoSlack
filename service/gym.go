@@ -59,6 +59,7 @@ func RemoveGym(db *sql.DB, teamid string, gymid int) (*model.Gym, error) {
 //GetGym gets a gym by its id number
 func GetGym(db *sql.DB, teamid string, gymid int) (*model.Gym, error) {
 	gym := new(model.Gym)
+	gym.UpdatedBy = new(model.Trainer)
 	err := db.QueryRow("SELECT GymId,GymName,PokeTeam,GymLevel,UpdatedBy,Updated FROM system.Gym WHERE TeamId = $1 AND GymId = $2", teamid, gymid).Scan(&gym.ID, &gym.Name, &gym.OwnerTeam, &gym.Level, &gym.UpdatedBy.ID, &gym.Updated)
 	switch {
 	case err == sql.ErrNoRows:
