@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 	"strings"
@@ -55,7 +56,7 @@ func AddGym(w http.ResponseWriter, con *model.ReqContext) {
 		Name:      gymName,
 		OwnerTeam: model.None,
 		UpdatedBy: &model.Trainer{
-			ID:           con.Form.UserID,
+			ID:           sql.NullString{String: con.Form.UserID, Valid: true},
 			UserName:     con.Form.UserName,
 			VerifiedTeam: model.None,
 		},
