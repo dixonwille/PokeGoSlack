@@ -85,6 +85,23 @@ func GetGym(db *sql.DB, teamid string, gymid int) (*model.Gym, error) {
 	}
 }
 
+//UpdateGym updates the gym information
+func UpdateGym(db *sql.DB, teamid string, gym *model.Gym) error {
+	if len(gym.Name) > 100 {
+		gym.Name = gym.Name[:100]
+	}
+	_, err := GetTrainer(db, teamid, gym.UpdatedBy.ID.String)
+	if err != nil && exception.IsNoTrainerWithIDErr(err) {
+		er := InsertTrainer(db, teamid, gym.UpdatedBy)
+		if er != nil {
+			return er
+		}
+	} else if err != nil {
+		return err
+	}
+	return nil
+}
+
 //SplitGymsByTeam splits the gyms into a map by teams
 func SplitGymsByTeam(gyms []*model.Gym) map[model.TeamEnum][]*model.Gym {
 	splitGyms := make(map[model.TeamEnum][]*model.Gym)

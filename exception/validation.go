@@ -11,6 +11,7 @@ var (
 	errCmdNotFound       = errors.New("The command you are looking for is not found. Please use `help` to see possible commands.")
 	errOAuthAccessDenied = errors.New("PokeGo sees that you denied access. I am sorry you are not intrested.")
 	errNotANumber        = errors.New("That was not a valid number.")
+	errTeamNotFound      = errors.New("Could not find the team you are looking for.")
 )
 
 //NewInvalidTokenError creates a new invalid token error
@@ -36,6 +37,11 @@ func NewOAuthAccessDeniedError() *Exception {
 //NewNotANumberError is when trying to parse a string into a number
 func NewNotANumberError() *Exception {
 	return NewExceptionFromError(errNotANumber, http.StatusBadRequest)
+}
+
+//NewTeamNotFoundError is when trying to parse a string into a number
+func NewTeamNotFoundError() *Exception {
+	return NewExceptionFromError(errTeamNotFound, http.StatusBadRequest)
 }
 
 //IsInvalidTokenErr checks if err is an invalid token error
@@ -66,4 +72,10 @@ func IsOAuthAccessDeniedErr(err error) bool {
 func IsNotANumberErr(err error) bool {
 	e, ok := IsException(err)
 	return ok && e.Err.Error() == errNotANumber.Error()
+}
+
+//IsTeamNotFoundErr checks if err is a team not found error
+func IsTeamNotFoundErr(err error) bool {
+	e, ok := IsException(err)
+	return ok && e.Err.Error() == errTeamNotFound.Error()
 }

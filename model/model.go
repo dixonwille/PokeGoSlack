@@ -9,20 +9,24 @@ import (
 func init() {
 	PokeTeams = make(map[TeamEnum]PokeTeam)
 	PokeTeams[None] = PokeTeam{
-		Name:  "Available",
-		Color: "#D3D3D3",
+		Name:   "Available",
+		Color:  "#D3D3D3",
+		Search: "None",
 	}
 	PokeTeams[Mystic] = PokeTeam{
-		Name:  "Mystic",
-		Color: "#1977F6",
+		Name:   "Mystic",
+		Color:  "#1977F6",
+		Search: "Blue",
 	}
 	PokeTeams[Valor] = PokeTeam{
-		Name:  "Valor",
-		Color: "#EF1600",
+		Name:   "Valor",
+		Color:  "#EF1600",
+		Search: "Red",
 	}
 	PokeTeams[Instinct] = PokeTeam{
-		Name:  "Instinct",
-		Color: "#FDD100",
+		Name:   "Instinct",
+		Color:  "#FDD100",
+		Search: "Yellow",
 	}
 }
 

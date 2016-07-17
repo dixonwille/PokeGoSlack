@@ -32,7 +32,7 @@ func gymInit() {
 	updateCmd := model.NewCommand("update", "Updates a gym's information.")
 	updateCmd.AddConroller(UpdateGym)
 	updateCmd.AddArgument("gymid", "The ID of the gym you want to update.")
-	updateCmd.AddArgument("team", "Which team owns this gym.")
+	updateCmd.AddArgument("team", "[OPTIONAL] Which team owns this gym.\n*B*lue, *R*ed, *Y*ellow, *N*one\n*M*ystic, *V*alor, *I*nstinct, *A*vailable")
 	updateCmd.AddArgument("level", "[OPTIONAL] What level is the gym.")
 	updateCmd.AddArgument("help", "Displays this message.")
 	GymCmds[updateCmd.Cmd] = updateCmd
@@ -133,8 +133,71 @@ func ListGyms(w http.ResponseWriter, con *model.ReqContext) {
 
 //UpdateGym is used to update a specific gym.
 func UpdateGym(w http.ResponseWriter, con *model.ReqContext) {
-	res := model.NewPrivateResponse("The command " + con.Command.Cmd + " has not been implimented yet")
-	helper.Write(w, http.StatusOK, res)
+	if con.Args == nil || len(con.Args) < 2 || len(con.Args) > 3 {
+		cmdHelp(con.Command.Cmd)
+		return
+	}
+	gymid, err := strconv.Atoi(con.Args[0])
+	if err != nil {
+		newErr := exception.NewNotANumberError()
+		helper.WriteError(w, newErr)
+		return
+	}
+	gym, err := service.GetGym(con.DB, con.Form.TeamID, gymid)
+	if err != nil {
+		helper.WriteError(w, err)
+		return
+	}
+	var gymteam model.TeamEnum
+	firstArgTeam := false
+	gymlevel, err := strconv.Atoi(con.Args[1])
+	if err != nil {
+		firstArgTeam = true
+		t, er := validateTeam(con.Args[1])
+		if er != nil {
+			helper.WriteError(w, er)
+			return
+		}
+		gymteam = t
+	}
+	if firstArgTeam && gym.OwnerTeam != gymteam {
+		gym.OwnerTeam = gymteam
+		gym.Level = 0
+	} else if !firstArgTeam {
+		gym.Level = gymlevel
+	}
+
+	if len(con.Args) == 3 {
+		if firstArgTeam {
+			gymlevel, err = strconv.Atoi(con.Args[2])
+			if err != nil {
+				helper.WriteError(w, err)
+				return
+			}
+			gym.Level = gymlevel
+		} else {
+			t, er := validateTeam(con.Args[2])
+			if er != nil {
+				helper.WriteError(w, er)
+				return
+			}
+			gym.OwnerTeam = t
+		}
+	}
+
+	err = service.UpdateGym(con.DB, con.Form.TeamID, gym)
+	if err != nil {
+		helper.WriteError(w, err)
+	}
+	gymRes := model.NewPublicResponse("")
+	gymAtt := model.NewAttachment("*" + gym.Name + "* has been updated.")
+	gymAtt.Title = gym.Name
+	gymAtt.Text = "ID: " + strconv.Itoa(gym.ID)
+	gymAtt.Color = model.PokeTeams[gym.OwnerTeam].Color
+	teamField := model.NewField("Team", model.PokeTeams[gym.OwnerTeam].Name, true)
+	levelField := model.NewField("Level", strconv.Itoa(gym.Level), true)
+	gymAtt.AddFields(*teamField, *levelField)
+	gymRes.AddAttachments(*gymAtt)
 }
 
 //RemoveGym removes a gym from the watch list.
@@ -199,4 +262,15 @@ func cmdHelp(cmdHelp string) *model.Response {
 	}
 	res.AddAttachments(*att)
 	return res
+}
+
+func validateTeam(team string) (model.TeamEnum, error) {
+	for tenum, t := range model.PokeTeams {
+		if len(team) == 1 && (strings.ToLower(team) == strings.ToLower(string(t.Name[0])) || strings.ToLower(team) == strings.ToLower(string(t.Search[0]))) {
+			return tenum, nil
+		} else if strings.ToLower(team) == strings.ToLower(string(t.Name)) || strings.ToLower(team) == strings.ToLower(string(t.Search)) {
+			return tenum, nil
+		}
+	}
+	return 0, exception.NewTeamNotFoundError()
 }

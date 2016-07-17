@@ -19,6 +19,7 @@ const (
 
 //PokeTeam are the attributes associated with each team
 type PokeTeam struct {
-	Name  string
-	Color string
+	Name   string
+	Color  string
+	Search string
 }
