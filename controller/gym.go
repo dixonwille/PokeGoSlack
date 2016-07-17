@@ -72,6 +72,11 @@ func AddGym(w http.ResponseWriter, con *model.ReqContext) {
 
 //ListGyms is used to list all the gyms.
 func ListGyms(w http.ResponseWriter, con *model.ReqContext) {
+	if con.Args != nil && len(con.Args) > 1 {
+		res := cmdHelp(con.Command.Cmd)
+		helper.Write(w, http.StatusOK, res)
+		return
+	}
 	if con.Args == nil || len(con.Args) == 0 {
 		gyms, err := service.GetListGyms(con.DB, con.Form.TeamID)
 		if err != nil {
@@ -103,8 +108,27 @@ func ListGyms(w http.ResponseWriter, con *model.ReqContext) {
 		helper.Write(w, http.StatusOK, gymsResp)
 		return
 	}
-	res := model.NewPrivateResponse("The command " + con.Command.Cmd + " has not been implimented yet")
-	helper.Write(w, http.StatusOK, res)
+	gymid, err := strconv.Atoi(con.Args[0])
+	if err != nil {
+		newErr := exception.NewNotANumberError()
+		helper.WriteError(w, newErr)
+		return
+	}
+	gym, err := service.GetGym(con.DB, con.Form.TeamID, gymid)
+	if err != nil {
+		helper.WriteError(w, err)
+		return
+	}
+	gymRes := model.NewPublicResponse("")
+	gymAtt := model.NewAttachment("")
+	gymAtt.Title = gym.Name
+	gymAtt.Text = "ID: " + strconv.Itoa(gym.ID)
+	gymAtt.Color = model.PokeTeams[gym.OwnerTeam].Color
+	teamField := model.NewField("Team", model.PokeTeams[gym.OwnerTeam].Name, true)
+	levelField := model.NewField("Level", strconv.Itoa(gym.Level), true)
+	gymAtt.AddFields(*teamField, *levelField)
+	gymRes.AddAttachments(*gymAtt)
+	helper.Write(w, http.StatusOK, gymRes)
 }
 
 //UpdateGym is used to update a specific gym.
@@ -131,7 +155,7 @@ func RemoveGym(w http.ResponseWriter, con *model.ReqContext) {
 		helper.WriteError(w, err)
 		return
 	}
-	res := model.NewPublicResponse(gym.Name + " was removed from the watch list.")
+	res := model.NewPublicResponse("*" + gym.Name + "* was removed from the watch list.")
 	helper.Write(w, http.StatusOK, res)
 }
 
