@@ -29,6 +29,16 @@ func GetListGyms(db *sql.DB, teamid string) ([]*model.Gym, error) {
 	return gyms, nil
 }
 
+//AddGym addes a gym to the database
+func AddGym(db *sql.DB, teamid string, gym *model.Gym) error {
+	rows, err := db.Query("INSERT INTO system.Gym (TeamId,GymName,PokeTeam) VALUES ($1,$2,$3)", teamid, gym.Name, gym.OwnerTeam)
+	if err != nil {
+		return exception.NewInternalError(err.Error())
+	}
+	defer rows.Close()
+	return nil
+}
+
 //SplitGymsByTeam splits the gyms into a map by teams
 func SplitGymsByTeam(gyms []*model.Gym) map[model.TeamEnum][]*model.Gym {
 	splitGyms := make(map[model.TeamEnum][]*model.Gym)

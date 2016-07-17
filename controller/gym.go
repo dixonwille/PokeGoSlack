@@ -44,23 +44,36 @@ func gymInit() {
 
 //AddGym is used to add a gym to watch.
 func AddGym(w http.ResponseWriter, con *model.ReqContext) {
-	res := model.NewPrivateResponse("The command " + con.Command.Cmd + " has not been implimented yet")
+	if con.Args == nil || len(con.Args) == 0 {
+		res := cmdHelp(con.Command.Cmd)
+		helper.Write(w, http.StatusOK, res)
+		return
+	}
+	gymName := strings.Join(con.Args, " ")
+	gym := &model.Gym{
+		Name:      gymName,
+		OwnerTeam: model.None,
+	}
+	err := service.AddGym(con.DB, con.Form.TeamID, gym)
+	if err != nil {
+		helper.WriteError(w, err)
+		return
+	}
+	res := model.NewPrivateResponse("The gym " + gymName + " was added to your team.")
 	helper.Write(w, http.StatusOK, res)
 }
 
 //ListGyms is used to list all the gyms.
 func ListGyms(w http.ResponseWriter, con *model.ReqContext) {
-	imediateResp := model.RespondLater(true)
-	helper.Write(w, http.StatusOK, imediateResp)
 	if con.Args == nil || len(con.Args) == 0 {
 		gyms, err := service.GetListGyms(con.DB, con.Form.TeamID)
 		if err != nil {
-			helper.RespondingLaterError(con.Form.ResponseURL, err)
+			helper.WriteError(w, err)
 			return
 		}
 		if len(gyms) == 0 {
 			res := model.NewPublicResponse("Your team is not watching any gyms! Use `/gym add` to start watching.")
-			helper.RespondingLater(con.Form.ResponseURL, res)
+			helper.Write(w, http.StatusOK, res)
 			return
 		}
 		gymsResp := model.NewPublicResponse("Your team is watching the following:")
@@ -75,11 +88,11 @@ func ListGyms(w http.ResponseWriter, con *model.ReqContext) {
 			}
 			gymsResp.AddAttachments(*gymsAtt)
 		}
-		helper.RespondingLater(con.Form.ResponseURL, gymsResp)
+		helper.Write(w, http.StatusOK, gymsResp)
 		return
 	}
 	res := model.NewPrivateResponse("The command " + con.Command.Cmd + " has not been implimented yet")
-	helper.RespondingLater(con.Form.ResponseURL, res)
+	helper.Write(w, http.StatusOK, res)
 }
 
 //UpdateGym is used to update a specific gym.
