@@ -35,7 +35,7 @@ func Gym(w http.ResponseWriter, r *http.Request) {
 		helper.WriteError(w, err)
 		return
 	}
-	if args[len(args)-1] == "help" {
+	if len(args) > 0 && args[len(args)-1] == "help" {
 		controller.GymHelp(w, command.Cmd)
 		return
 	}

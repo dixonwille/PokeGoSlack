@@ -10,11 +10,11 @@ type Exception struct {
 }
 
 func (e *Exception) Error() string {
-	msg := "Code " + string(e.Code)
+	var msg string
 	if e.Err != nil {
-		msg += ": " + e.Err.Error()
-	} else if e.Msg != "" {
-		msg += ": " + e.Msg
+		msg = e.Err.Error()
+	} else {
+		msg = e.Msg
 	}
 	return msg
 }
@@ -52,5 +52,13 @@ func IsException(err error) (e *Exception, ok bool) {
 
 //LogError will log the error to env.Logger
 func (e *Exception) LogError() {
-	env.Logger.Println(e.Error() + " " + e.Msg)
+	var msg string
+	if e.Err != nil && e.Msg != "" {
+		msg = e.Err.Error() + ": " + e.Msg
+	} else if e.Err != nil {
+		msg = e.Err.Error()
+	} else {
+		msg = e.Msg
+	}
+	env.Logger.Println(msg)
 }
