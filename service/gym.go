@@ -31,12 +31,43 @@ func GetListGyms(db *sql.DB, teamid string) ([]*model.Gym, error) {
 
 //AddGym addes a gym to the database
 func AddGym(db *sql.DB, teamid string, gym *model.Gym) error {
+	if len(gym.Name) > 50 {
+		gym.Name = gym.Name[:50]
+	}
 	rows, err := db.Query("INSERT INTO system.Gym (TeamId,GymName,PokeTeam) VALUES ($1,$2,$3)", teamid, gym.Name, gym.OwnerTeam)
 	if err != nil {
 		return exception.NewInternalError(err.Error())
 	}
 	defer rows.Close()
 	return nil
+}
+
+//RemoveGym removes a gym from the watch list
+func RemoveGym(db *sql.DB, teamid string, gymid int) (*model.Gym, error) {
+	gym, err := GetGym(db, teamid, gymid)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := db.Query("DELETE FROM system.Gym WHERE TeamId = $1 AND GymId = $2", teamid, gym.ID)
+	if err != nil {
+		return nil, exception.NewInternalError(err.Error())
+	}
+	defer rows.Close()
+	return gym, nil
+}
+
+//GetGym gets a gym by its id number
+func GetGym(db *sql.DB, teamid string, gymid int) (*model.Gym, error) {
+	gym := new(model.Gym)
+	err := db.QueryRow("SELECT GymId,GymName,PokeTeam,GymLevel,UpdatedBy,Updated FROM system.Gym WHERE TeamId = $1 AND GymId = $2", teamid, gymid).Scan(&gym.ID, &gym.Name, &gym.OwnerTeam, &gym.Level, &gym.UpdatedBy.ID, &gym.Updated)
+	switch {
+	case err == sql.ErrNoRows:
+		return nil, exception.NewNoGymWithIDError()
+	case err != nil:
+		return nil, exception.NewInternalError(err.Error())
+	default:
+		return gym, nil
+	}
 }
 
 //SplitGymsByTeam splits the gyms into a map by teams

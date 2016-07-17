@@ -1,2 +1,0 @@
-ALTER TABLE system.Team
-  ADD COLUMN AccessToken VARCHAR(50) UNIQUE;

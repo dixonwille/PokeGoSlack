@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/dixonwille/PokeGoSlack/exception"
 	"github.com/dixonwille/PokeGoSlack/helper"
 	"github.com/dixonwille/PokeGoSlack/model"
 	"github.com/dixonwille/PokeGoSlack/service"
@@ -59,7 +60,7 @@ func AddGym(w http.ResponseWriter, con *model.ReqContext) {
 		helper.WriteError(w, err)
 		return
 	}
-	res := model.NewPrivateResponse("The gym " + gymName + " was added to your team.")
+	res := model.NewPublicResponse("The gym *" + gymName + "* was added to your team.")
 	helper.Write(w, http.StatusOK, res)
 }
 
@@ -80,10 +81,15 @@ func ListGyms(w http.ResponseWriter, con *model.ReqContext) {
 		splitGyms := service.SplitGymsByTeam(gyms)
 		for tenum, gyms := range splitGyms {
 			gymsAtt := model.NewAttachment("")
-			gymsAtt.Text = model.PokeTeams[tenum].Name
+			gymsAtt.Title = model.PokeTeams[tenum].Name
+			if tenum == model.None {
+				gymsAtt.Text = "These gyms are available for anyone to capture."
+			} else {
+				gymsAtt.Text = "These gyms are controlled by team " + model.PokeTeams[tenum].Name
+			}
 			gymsAtt.Color = model.PokeTeams[tenum].Color
 			for _, gym := range gyms {
-				gymField := model.NewField(gym.Name, strconv.Itoa(gym.ID), true)
+				gymField := model.NewField(gym.Name, "ID: "+strconv.Itoa(gym.ID), true)
 				gymsAtt.AddFields(*gymField)
 			}
 			gymsResp.AddAttachments(*gymsAtt)
@@ -103,7 +109,23 @@ func UpdateGym(w http.ResponseWriter, con *model.ReqContext) {
 
 //RemoveGym removes a gym from the watch list.
 func RemoveGym(w http.ResponseWriter, con *model.ReqContext) {
-	res := model.NewPrivateResponse("The command " + con.Command.Cmd + " has not been implimented yet")
+	if con.Args == nil || len(con.Args) != 1 {
+		res := cmdHelp(con.Command.Cmd)
+		helper.Write(w, http.StatusOK, res)
+		return
+	}
+	gymID, err := strconv.Atoi(con.Args[0])
+	if err != nil {
+		newErr := exception.NewNotANumberError()
+		helper.WriteError(w, newErr)
+		return
+	}
+	gym, err := service.RemoveGym(con.DB, con.Form.TeamID, gymID)
+	if err != nil {
+		helper.WriteError(w, err)
+		return
+	}
+	res := model.NewPublicResponse(gym.Name + " was removed from the watch list.")
 	helper.Write(w, http.StatusOK, res)
 }
 
