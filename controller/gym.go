@@ -2,10 +2,13 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
+	"github.com/dixonwille/PokeGoSlack/exception"
 	"github.com/dixonwille/PokeGoSlack/helper"
 	"github.com/dixonwille/PokeGoSlack/model"
+	"github.com/dixonwille/PokeGoSlack/service"
 )
 
 //GymCmds are the Possible commands to use with the gym endpoint
@@ -48,8 +51,35 @@ func AddGym(w http.ResponseWriter, con *model.ReqContext) {
 
 //ListGyms is used to list all the gyms.
 func ListGyms(w http.ResponseWriter, con *model.ReqContext) {
+	imediateResp := model.RespondLater(true)
+	helper.Write(w, http.StatusOK, imediateResp)
+	if con.Args == nil || len(con.Args) == 0 {
+		gyms, err := service.GetListGyms(con.DB, con.Form.TeamID)
+		if err != nil {
+			if exception.IsNoGymsForTeamErr(err) {
+				res := model.NewPublicResponse("Your team is not watching any gyms! Use `/gym add` to start watching.")
+				helper.RespondingLater(con.Form.ResponseURL, res)
+				return
+			}
+			helper.RespondingLaterError(con.Form.ResponseURL, err)
+			return
+		}
+		gymsResp := model.NewPublicResponse("Your team is watching the following:")
+		splitGyms := service.SplitGymsByTeam(gyms)
+		for tenum, gyms := range splitGyms {
+			gymsAtt := model.NewAttachment("")
+			gymsAtt.Text = model.PokeTeams[tenum].Name
+			gymsAtt.Color = model.PokeTeams[tenum].Color
+			for _, gym := range gyms {
+				gymField := model.NewField(gym.Name, strconv.Itoa(gym.ID), true)
+				gymsAtt.AddFields(*gymField)
+			}
+			gymsResp.AddAttachments(*gymsAtt)
+		}
+		helper.RespondingLater(con.Form.ResponseURL, gymsResp)
+	}
 	res := model.NewPrivateResponse("The command " + con.Command.Cmd + " has not been implimented yet")
-	helper.Write(w, http.StatusOK, res)
+	helper.RespondingLater(con.Form.ResponseURL, res)
 }
 
 //UpdateGym is used to update a specific gym.

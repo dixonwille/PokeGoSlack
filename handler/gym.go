@@ -35,8 +35,13 @@ func Gym(w http.ResponseWriter, r *http.Request) {
 		helper.WriteError(w, err)
 		return
 	}
-	if len(args) > 0 && args[len(args)-1] == "help" {
+	if len(args) > 0 && args[len(args)-1] == command.Args[len(command.Args)-1].Name {
 		controller.GymHelp(w, command.Cmd)
+		return
+	}
+	if con.DB == nil {
+		err = exception.NewInternalError("Could not get db from context")
+		helper.WriteError(w, err)
 		return
 	}
 	con.Command = command

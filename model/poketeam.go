@@ -7,8 +7,10 @@ type TeamEnum int
 var PokeTeams map[TeamEnum]PokeTeam
 
 const (
+	//None is for no one owns this gym yet
+	None TeamEnum = iota
 	//Mystic is for team blue
-	Mystic TeamEnum = iota
+	Mystic
 	//Valor is for team red
 	Valor
 	//Instinct is for team yellow

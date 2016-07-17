@@ -8,6 +8,10 @@ import (
 
 func init() {
 	PokeTeams = make(map[TeamEnum]PokeTeam)
+	PokeTeams[None] = PokeTeam{
+		Name:  "Available",
+		Color: "#D3D3D3",
+	}
 	PokeTeams[Mystic] = PokeTeam{
 		Name:  "Mystic",
 		Color: "#1977F6",
