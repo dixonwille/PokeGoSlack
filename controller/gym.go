@@ -134,7 +134,8 @@ func ListGyms(w http.ResponseWriter, con *model.ReqContext) {
 //UpdateGym is used to update a specific gym.
 func UpdateGym(w http.ResponseWriter, con *model.ReqContext) {
 	if con.Args == nil || len(con.Args) < 2 || len(con.Args) > 3 {
-		cmdHelp(con.Command.Cmd)
+		res := cmdHelp(con.Command.Cmd)
+		helper.Write(w, http.StatusOK, res)
 		return
 	}
 	gymid, err := strconv.Atoi(con.Args[0])
