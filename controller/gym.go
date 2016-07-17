@@ -32,7 +32,7 @@ func gymInit() {
 	updateCmd := model.NewCommand("update", "Updates a gym's information.")
 	updateCmd.AddConroller(UpdateGym)
 	updateCmd.AddArgument("gymid", "The ID of the gym you want to update.")
-	updateCmd.AddArgument("team", "[OPTIONAL] Which team owns this gym.\n*B*lue, *R*ed, *Y*ellow, *N*one\n*M*ystic, *V*alor, *I*nstinct, *A*vailable")
+	updateCmd.AddArgument("team", "[OPTIONAL] Which team owns this gym. (Full name or first letter)\nBlue, Red, Yellow, None Mystic, Valor, Instinct, Available")
 	updateCmd.AddArgument("level", "[OPTIONAL] What level is the gym.")
 	updateCmd.AddArgument("help", "Displays this message.")
 	GymCmds[updateCmd.Cmd] = updateCmd
@@ -189,6 +189,7 @@ func UpdateGym(w http.ResponseWriter, con *model.ReqContext) {
 	err = service.UpdateGym(con.DB, con.Form.TeamID, gym)
 	if err != nil {
 		helper.WriteError(w, err)
+		return
 	}
 	gymRes := model.NewPublicResponse("")
 	gymAtt := model.NewAttachment("*" + gym.Name + "* has been updated.")
@@ -199,6 +200,7 @@ func UpdateGym(w http.ResponseWriter, con *model.ReqContext) {
 	levelField := model.NewField("Level", strconv.Itoa(gym.Level), true)
 	gymAtt.AddFields(*teamField, *levelField)
 	gymRes.AddAttachments(*gymAtt)
+	helper.Write(w, http.StatusOK, gymRes)
 }
 
 //RemoveGym removes a gym from the watch list.
