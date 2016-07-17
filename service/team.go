@@ -12,7 +12,7 @@ func InsertTeam(db *sql.DB, team *model.Team) error {
 	if len(team.Name) > 50 {
 		team.Name = team.Name[:50]
 	}
-	rows, err := db.Query("INSERT INTO system.Team (TeamId,TeamName,PokeTeam,AccessToken) VALUES ($1, $2, $3)", team.ID, team.Name, team.Team, team.Token)
+	rows, err := db.Query("INSERT INTO system.Team (TeamId,TeamName,PokeTeam,AccessToken) VALUES ($1, $2, $3, $4)", team.ID, team.Name, team.Team, team.Token)
 	if err != nil {
 		return exception.NewInternalError(err.Error())
 	}
