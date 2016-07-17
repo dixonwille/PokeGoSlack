@@ -54,6 +54,9 @@ func AddGym(w http.ResponseWriter, con *model.ReqContext) {
 	gym := &model.Gym{
 		Name:      gymName,
 		OwnerTeam: model.None,
+		UpdatedBy: &model.Trainer{
+			ID: con.Form.UserID,
+		},
 	}
 	err := service.AddGym(con.DB, con.Form.TeamID, gym)
 	if err != nil {

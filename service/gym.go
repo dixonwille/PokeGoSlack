@@ -34,7 +34,7 @@ func AddGym(db *sql.DB, teamid string, gym *model.Gym) error {
 	if len(gym.Name) > 50 {
 		gym.Name = gym.Name[:50]
 	}
-	rows, err := db.Query("INSERT INTO system.Gym (TeamId,GymName,PokeTeam) VALUES ($1,$2,$3)", teamid, gym.Name, gym.OwnerTeam)
+	rows, err := db.Query("INSERT INTO system.Gym (TeamId,GymName,PokeTeam,UpdatedBy) VALUES ($1,$2,$3.$4)", teamid, gym.Name, gym.OwnerTeam, gym.UpdatedBy.ID)
 	if err != nil {
 		return exception.NewInternalError(err.Error())
 	}
