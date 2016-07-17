@@ -20,13 +20,13 @@ func InsertTeam(db *sql.DB, body *model.OAuthResp) error {
 		spew.Dump(len(body.AccessToken))
 		rows, er := db.Query("INSERT INTO system.Team (TeamId,TeamName,AccessToken) VALUES ($1, $2, $3)", body.TeamID, body.TeamName, body.AccessToken)
 		if er != nil {
-			return er
+			return exception.NewInternalError(err.Error())
 		}
 		defer rows.Close()
 	case err != nil:
-		return err
+		return exception.NewInternalError(err.Error())
 	default:
-		return exception.ErrTeamExist
+		return exception.NewTeamExistError()
 	}
 
 	return nil

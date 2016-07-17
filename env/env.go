@@ -33,16 +33,8 @@ const (
 	defaultPort = "80"
 )
 const (
-	//KeyForm is the key used to get the parsed reqest form.
-	KeyForm Key = iota
-	//KeyArgs is the key for the arguments for the command.
-	KeyArgs
-	//KeyHelpCmd is the key for which command to display the help for
-	KeyHelpCmd
-	//KeyCmd is the command that got called
-	KeyCmd
-	//KeyDB is the instance of the database
-	KeyDB
+	//KeyReq is used for general context all methods should have
+	KeyReq Key = iota
 	//KeyCode is used for Auth
 	KeyCode
 )

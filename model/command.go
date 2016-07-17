@@ -1,4 +1,4 @@
-package controller
+package model
 
 import "net/http"
 
@@ -6,8 +6,8 @@ import "net/http"
 type Command struct {
 	Cmd        string
 	HelpText   string
-	Args       []Argument
-	Controller func(http.ResponseWriter, *http.Request)
+	Args       []*Argument
+	Controller func(http.ResponseWriter, *ReqContext)
 }
 
 //Argument are the arguments that each command can have
@@ -30,10 +30,10 @@ func (cmd *Command) AddArgument(name, help string) {
 		Name:     name,
 		HelpText: help,
 	}
-	cmd.Args = append(cmd.Args, *arg)
+	cmd.Args = append(cmd.Args, arg)
 }
 
 //AddConroller adds a controller the command calls
-func (cmd *Command) AddConroller(ctrl func(http.ResponseWriter, *http.Request)) {
+func (cmd *Command) AddConroller(ctrl func(http.ResponseWriter, *ReqContext)) {
 	cmd.Controller = ctrl
 }

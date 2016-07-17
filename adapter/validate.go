@@ -3,20 +3,26 @@ package adapter
 import (
 	"net/http"
 
-	"github.com/dixonwille/PokeGoSlack/env"
 	"github.com/dixonwille/PokeGoSlack/helper"
-	"github.com/gorilla/context"
+	"github.com/dixonwille/PokeGoSlack/model"
 )
 
 //Validate makes sure that the request on endpoint is valid
 func Validate(command string) Adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			req := helper.ValidateRequestAndParse(w, r, command)
-			if req == nil {
-				return //error was handled for us already
+			req, err := helper.ParseAndValidateRequest(r)
+			if err != nil {
+				helper.WriteError(w, err)
+				return
 			}
-			context.Set(r, env.KeyForm, *req)
+			con, err := model.GetReqContext(r)
+			if err != nil {
+				helper.WriteError(w, err)
+				return
+			}
+			con.Form = req
+			con.Set(r)
 			h.ServeHTTP(w, r)
 		})
 	}

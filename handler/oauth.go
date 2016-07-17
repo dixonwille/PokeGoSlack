@@ -4,11 +4,9 @@ import (
 	"net/http"
 
 	"github.com/dixonwille/PokeGoSlack/controller"
-	"github.com/dixonwille/PokeGoSlack/env"
 	"github.com/dixonwille/PokeGoSlack/exception"
 	"github.com/dixonwille/PokeGoSlack/helper"
 	"github.com/dixonwille/PokeGoSlack/model"
-	"github.com/gorilla/context"
 )
 
 const (
@@ -22,29 +20,36 @@ func OAuth(w http.ResponseWriter, r *http.Request) {
 		if param == "error" {
 			if value[0] == accessDenied {
 				//TODO:replace with sorry you don't want template
-				errMsg := model.NewErrorMessage("Sorry something went wrong.")
-				helper.Write(w, http.StatusOK, errMsg)
+				newErr := exception.NewOAuthAccessDeniedError()
+				helper.WriteError(w, newErr)
 				return
 			}
 			var msg string
 			for _, v := range value {
 				msg += msg + " " + v
 			}
-			newErr := exception.NewInternalErr(104, msg)
-			errMsg := model.NewErrorMessage(newErr.Error())
-			newErr.LogError()
-			helper.Write(w, http.StatusInternalServerError, errMsg)
+			newErr := exception.NewInternalError(msg)
+			helper.WriteError(w, newErr)
 			return
 		}
 	}
-	code := params["code"][0]
-	if code == "" {
-		newErr := exception.NewInternalErr(105, "Could not recieve the code from the request.")
-		errMsg := model.NewErrorMessage(newErr.Error())
-		newErr.LogError()
-		helper.Write(w, http.StatusInternalServerError, errMsg)
+	code := params["code"]
+	if code == nil {
+		newErr := exception.NewInternalError("code was not part of the query")
+		helper.WriteError(w, newErr)
 		return
 	}
-	context.Set(r, env.KeyCode, code)
+	if code[0] == "" {
+		newErr := exception.NewInternalError("Could not recieve the code from the request.")
+		helper.WriteError(w, newErr)
+		return
+	}
+	con, err := model.GetReqContext(r)
+	if err != nil {
+		helper.WriteError(w, err)
+		return
+	}
+	con.OAuthCode = code[0]
+	con.Set(r)
 	controller.OAuthAccess(w, r)
 }

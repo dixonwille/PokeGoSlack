@@ -1,13 +1,21 @@
 package exception
 
-import "errors"
+import (
+	"errors"
+	"net/http"
+)
 
 var (
-	//ErrTeamExist says that the team is already in DB
-	ErrTeamExist = errors.New("This team is already using PokeGo.")
+	errTeamExist = errors.New("This team is already using PokeGo.")
 )
+
+//NewTeamExistError is used to create an error when the team already exist
+func NewTeamExistError() *Exception {
+	return NewExceptionFromError(errTeamExist, http.StatusBadRequest)
+}
 
 //IsTeamExistErr states whether this erro is a team exist error
 func IsTeamExistErr(err error) bool {
-	return err.Error() == ErrTeamExist.Error()
+	e, ok := IsException(err)
+	return ok && e.Err.Error() == errTeamExist.Error()
 }

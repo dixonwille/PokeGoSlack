@@ -1,6 +1,10 @@
 package model
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/dixonwille/PokeGoSlack/exception"
+)
 
 //OAuthResp is the response from a handshake to Slack
 type OAuthResp struct {
@@ -17,7 +21,7 @@ func ParseOAuthResp(resp []byte) (*OAuthResp, error) {
 	authResp := new(OAuthResp)
 	err := json.Unmarshal(resp, authResp)
 	if err != nil {
-		return nil, err
+		return nil, exception.NewInternalError(err.Error())
 	}
 	return authResp, nil
 }
