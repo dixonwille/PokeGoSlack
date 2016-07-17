@@ -99,9 +99,9 @@ func UpdateGym(db *sql.DB, teamid string, gym *model.Gym) error {
 	} else if err != nil {
 		return err
 	}
-	rows, err := db.Query("UPDATE system.Gym SET PokeTeam = $3, GymLevel = $4, UpdatedBy = $5, Update = $6 WHERE TeamId = $1 AND GymId = $2", teamid, gym.ID, gym.OwnerTeam, gym.Level, gym.UpdatedBy.ID, gym.Updated)
+	rows, err := db.Query("UPDATE system.Gym SET PokeTeam = $3, GymLevel = $4, UpdatedBy = $5, Updated = $6 WHERE TeamId = $1 AND GymId = $2", teamid, gym.ID, gym.OwnerTeam, gym.Level, gym.UpdatedBy.ID, gym.Updated)
 	if err != nil {
-		return err
+		return exception.NewInternalError(err.Error())
 	}
 	defer rows.Close()
 	return nil
