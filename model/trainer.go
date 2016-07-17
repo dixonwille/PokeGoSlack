@@ -1,10 +1,13 @@
 package model
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 //Trainer is the pokemon trainer
 type Trainer struct {
-	ID           string
+	ID           sql.NullString
 	UserName     string
 	VerifiedTeam TeamEnum
 	VerifiedBy   *Trainer

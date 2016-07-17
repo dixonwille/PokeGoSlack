@@ -31,10 +31,10 @@ func GetListGyms(db *sql.DB, teamid string) ([]*model.Gym, error) {
 
 //AddGym addes a gym to the database
 func AddGym(db *sql.DB, teamid string, gym *model.Gym) error {
-	if len(gym.Name) > 50 {
-		gym.Name = gym.Name[:50]
+	if len(gym.Name) > 100 {
+		gym.Name = gym.Name[:100]
 	}
-	_, err := GetTrainer(db, teamid, gym.UpdatedBy.ID)
+	_, err := GetTrainer(db, teamid, gym.UpdatedBy.ID.String)
 	if err != nil && exception.IsNoTrainerWithIDErr(err) {
 		er := InsertTrainer(db, teamid, gym.UpdatedBy)
 		if er != nil {
@@ -76,7 +76,7 @@ func GetGym(db *sql.DB, teamid string, gymid int) (*model.Gym, error) {
 	case err != nil:
 		return nil, exception.NewInternalError(err.Error())
 	default:
-		trainer, err := GetTrainer(db, teamid, gym.UpdatedBy.ID)
+		trainer, err := GetTrainer(db, teamid, gym.UpdatedBy.ID.String)
 		if err != nil {
 			return nil, err
 		}

@@ -9,8 +9,8 @@ import (
 
 //InsertTeam inserts a new team into the database from response
 func InsertTeam(db *sql.DB, team *model.Team) error {
-	if len(team.Name) > 50 {
-		team.Name = team.Name[:50]
+	if len(team.Name) > 100 {
+		team.Name = team.Name[:100]
 	}
 	rows, err := db.Query("INSERT INTO system.Team (TeamId,TeamName,PokeTeam,AccessToken) VALUES ($1, $2, $3, $4)", team.ID, team.Name, team.Team, team.Token)
 	if err != nil {
