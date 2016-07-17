@@ -34,6 +34,15 @@ func AddGym(db *sql.DB, teamid string, gym *model.Gym) error {
 	if len(gym.Name) > 50 {
 		gym.Name = gym.Name[:50]
 	}
+	_, err := GetTrainer(db, teamid, gym.UpdatedBy.ID)
+	if err != nil && exception.IsNoTrainerWithIDErr(err) {
+		er := InsertTrainer(db, teamid, gym.UpdatedBy)
+		if er != nil {
+			return er
+		}
+	} else if err != nil {
+		return err
+	}
 	rows, err := db.Query("INSERT INTO system.Gym (TeamId,GymName,PokeTeam,UpdatedBy) VALUES ($1,$2,$3,$4)", teamid, gym.Name, gym.OwnerTeam, gym.UpdatedBy.ID)
 	if err != nil {
 		return exception.NewInternalError(err.Error())
@@ -67,6 +76,11 @@ func GetGym(db *sql.DB, teamid string, gymid int) (*model.Gym, error) {
 	case err != nil:
 		return nil, exception.NewInternalError(err.Error())
 	default:
+		trainer, err := GetTrainer(db, teamid, gym.UpdatedBy.ID)
+		if err != nil {
+			return nil, err
+		}
+		gym.UpdatedBy = trainer
 		return gym, nil
 	}
 }
