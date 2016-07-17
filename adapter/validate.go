@@ -8,7 +8,7 @@ import (
 )
 
 //Validate makes sure that the request on endpoint is valid
-func Validate(command string) Adapter {
+func Validate() Adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			req, err := helper.ParseAndValidateRequest(r)

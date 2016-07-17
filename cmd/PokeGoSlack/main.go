@@ -22,24 +22,24 @@ func main() {
 	db.SetMaxOpenConns(15) //20 Is the limit for heroku
 	router := mux.NewRouter().StrictSlash(true)
 	router.Handle("/gym", adapter.Adapt(http.HandlerFunc(handler.Gym),
+		adapter.Database(db),
+		adapter.Validate(),
 		adapter.InitContext(),
 		adapter.Header("Content-type", "application/json"),
-		adapter.Database(db),
-		adapter.Validate("/gym"),
 		adapter.Logging(env.Logger),
 	)).Methods("POST")
 
 	router.Handle("/trainer", adapter.Adapt(http.HandlerFunc(handler.Trainer),
+		adapter.Database(db),
+		adapter.Validate(),
 		adapter.InitContext(),
 		adapter.Header("Content-type", "application/json"),
-		adapter.Database(db),
-		adapter.Validate("/trainer"),
 		adapter.Logging(env.Logger),
 	)).Methods("POST")
 
 	router.Handle("/oauth", adapter.Adapt(http.HandlerFunc(handler.OAuth),
-		adapter.InitContext(),
 		adapter.Database(db),
+		adapter.InitContext(),
 		adapter.Logging(env.Logger),
 	)).Methods("GET")
 
