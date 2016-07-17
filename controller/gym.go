@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/dixonwille/PokeGoSlack/exception"
 	"github.com/dixonwille/PokeGoSlack/helper"
@@ -185,6 +186,13 @@ func UpdateGym(w http.ResponseWriter, con *model.ReqContext) {
 			gym.OwnerTeam = t
 		}
 	}
+
+	gym.UpdatedBy = &model.Trainer{
+		ID:           sql.NullString{String: con.Form.UserID, Valid: true},
+		UserName:     con.Form.UserName,
+		VerifiedTeam: model.None,
+	}
+	gym.Updated = time.Now().UTC()
 
 	err = service.UpdateGym(con.DB, con.Form.TeamID, gym)
 	if err != nil {
